@@ -1,9 +1,12 @@
 #include <SFML/Graphics.hpp>
+#include "Game.h"
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(800, 600), "Tetris");
+	sf::RenderWindow window(sf::VideoMode(382, 702), "Tetris");
 	window.setFramerateLimit(60);
+
+	Game game;
 
 	while (window.isOpen())
 	{
@@ -15,9 +18,16 @@ int main()
 			{
 				window.close();
 			}
+			if (event.type == sf::Event::KeyReleased)
+			{
+				game.Input(event.key.code);
+				break;
+			}
 		}
 
-		window.display();
+		game.Update();
+
+		game.Render(window);
 	}
 
 	return 0;
