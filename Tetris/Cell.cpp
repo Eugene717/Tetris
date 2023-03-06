@@ -27,3 +27,14 @@ void Cell::setPosition(const float x, const float y)
 {
 	body_.setPosition(x, y);
 }
+
+void Cell::setPos(const int x, const int y)
+{
+	pos_.x = x;
+	pos_.y = y;
+}
+
+void Cell::Move(const float x, const float y)
+{
+	body_.move(x, y);
+}

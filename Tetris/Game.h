@@ -9,8 +9,18 @@ class Game
 	std::vector<sf::Drawable*> objects_;
 	Cell* cells_[10][20];
 	Figure* figure_;
+	Figure* nextFigure_;
 
-	void SpawnFigure();
+	bool gameStarted;
+	int score_;
+	sf::Font font_;
+	
+	sf::Clock clock;
+
+	Figure* SpawnFigure();
+	bool CheckGameEnd() const;
+	void StartPlaceElement();
+	void DestroyFullLines();
 public:
 	Game();
 	~Game();

@@ -5,10 +5,20 @@
 
 Game::Game()
 {
+	font_.loadFromFile("arial.ttf");
+
 	Cell* border = new Cell(sf::Color(80, 80, 80));
 	objects_.push_back(border);
 
-	SpawnFigure();
+	sf::Text* score = new sf::Text("Score:\n" + std::to_string(score_), font_, 30);
+	score->setFillColor(sf::Color::White);
+	score->setPosition(500, 500);
+	objects_.push_back(score);
+
+	gameStarted = false;
+	figure_ = SpawnFigure();
+	nextFigure_ = SpawnFigure();
+	nextFigure_->Move(335, 0);
 }
 
 Game::~Game()
@@ -28,53 +38,104 @@ Game::~Game()
 	}
 
 	delete figure_;
+	delete nextFigure_;
 }
 
-void Game::SpawnFigure()
+Figure* Game::SpawnFigure()
 {
 	std::random_device rd;
 	switch (rd() % 7)
 	{
 	case 0:
-		figure_ = new Figure(figures::I);
+		return new Figure(figures::I);
 		break;
 	case 1:
-		figure_ = new Figure(figures::J);
+		return new Figure(figures::J);
 		break;
 	case 2:
-		figure_ = new Figure(figures::L);		
+		return new Figure(figures::L);
 		break;
 	case 3:
-		figure_ = new Figure(figures::O);
+		return new Figure(figures::O);
 		break;
 	case 4:
-		figure_ = new Figure(figures::S);
+		return new Figure(figures::S);
 		break;
 	case 5:
-		figure_ = new Figure(figures::T);
+		return new Figure(figures::T);
 		break;
 	case 6:
-		figure_ = new Figure(figures::Z);
+		return new Figure(figures::Z);
 		break;
 	default:
 		break;
 	}
+}
+
+bool Game::CheckGameEnd() const
+{
+	if (cells_[5][0] != nullptr && cells_[5][1] != nullptr)
+		return true;
+
+	return false;
+}
+
+void Game::StartPlaceElement()
+{
+	delete figure_;
+	figure_ = nextFigure_;
+	nextFigure_ = SpawnFigure();
+
+	figure_->Move(-335, 0);
+	nextFigure_->Move(335, 0);
+}
+
+void Game::DestroyFullLines()
+{
 
 }
 
 void Game::Input(sf::Keyboard::Key key)
 {
-
+	if (!gameStarted)
+	{
+		clock.restart();
+		gameStarted = true;
+	}
+	else
+		figure_->Input(key);
 }
 
 void Game::Update()
 {
+	if (gameStarted)
+	{
+		if (clock.getElapsedTime().asMilliseconds() >= 500)
+		{
+			if (!figure_->Update(cells_))
+			{
+				if (CheckGameEnd())
+				{
+					gameStarted = false;
+					dynamic_cast<sf::Text*>(objects_[1])->setFillColor(sf::Color::Red);
+					return;
+				}
 
+				StartPlaceElement();
+
+				DestroyFullLines(); //placed
+			}
+			clock.restart();
+		}
+	}
 }
 
 void Game::Render(sf::RenderWindow& window)
 {
+	window.clear(sf::Color::Black);
+
 	figure_->Render(window);
+	nextFigure_->Render(window);
 
 	for (int i = 1; i < 13; i++)  //horiz border
 	{

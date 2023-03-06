@@ -16,6 +16,9 @@ class Cell : public sf::Drawable
 public:
 	Cell(sf::Color color);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-	void setPosition(const float x, const float y);
+	void setPosition(const float x, const float y);  //graphical position
+	void setPos(const int x, const int y);  //data pos
+	void Move(const float x, const float y);
+	friend class Figure;
 };
 

@@ -19,11 +19,16 @@ class Figure
 {
 	bool speedUp_;
 	std::vector<Cell*> cells_;
+
+	void PlaceFigure(Cell* cells[10][20]);
+	bool CanMove(Cell* cells[10][20]) const;
 public:
 	Figure(figures figure);
 	~Figure();
+	void Move(const float x, const float y);
+
 	void Input(sf::Keyboard::Key key);
-	void Update();
+	bool Update(Cell* cells[10][20]);
 	void Render(sf::RenderWindow& window);
 };
 

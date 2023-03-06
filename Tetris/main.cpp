@@ -3,7 +3,7 @@
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(382, 702), "Tetris");
+	sf::RenderWindow window(sf::VideoMode(682, 702), "Tetris");
 	window.setFramerateLimit(60);
 
 	Game game;
@@ -18,13 +18,18 @@ int main()
 			{
 				window.close();
 			}
-			if (event.type == sf::Event::KeyReleased)
+			if (event.type == sf::Event::KeyPressed)
 			{
 				game.Input(event.key.code);
 				break;
 			}
+			/*if (event.type == sf::Event::KeyReleased)
+			{
+				game.Input(event.key.code);
+				break;
+			}*/
 		}
-
+		
 		game.Update();
 
 		game.Render(window);
