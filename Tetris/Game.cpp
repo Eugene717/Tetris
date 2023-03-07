@@ -10,12 +10,12 @@ Game::Game()
 	Cell* border = new Cell(sf::Color(80, 80, 80));
 	objects_.push_back(border);
 
-	sf::Text* score = new sf::Text("Score:\n" + std::to_string(score_), font_, 30);
+	sf::Text* score = new sf::Text("Score: " + std::to_string(score_), font_, 30);
 	score->setFillColor(sf::Color::White);
-	score->setPosition(500, 500);
+	score->setPosition(450, 500);
 	objects_.push_back(score);
 
-	gameStarted = false;
+	gameStarted_ = gameEnded_= false;
 	figure_ = SpawnFigure();
 	nextFigure_ = SpawnFigure();
 	nextFigure_->Move(335, 0);
@@ -97,10 +97,15 @@ void Game::DestroyFullLines()
 
 void Game::Input(sf::Keyboard::Key key)
 {
-	if (!gameStarted)
+	if (!gameStarted_)
 	{
 		clock.restart();
-		gameStarted = true;
+		gameStarted_ = true;
+	}
+	else if (gameEnded_)
+	{
+		gameStarted_ = false;
+		gameEnded_ = false;
 	}
 	else
 		figure_->Input(key);
@@ -108,25 +113,24 @@ void Game::Input(sf::Keyboard::Key key)
 
 void Game::Update()
 {
-	if (gameStarted)
+	if (gameStarted_)
 	{
-		if (clock.getElapsedTime().asMilliseconds() >= 500)
+		if (!figure_->Update(cells_, clock.getElapsedTime()))  //placed
 		{
-			if (!figure_->Update(cells_))
+			if (CheckGameEnd())
 			{
-				if (CheckGameEnd())
-				{
-					gameStarted = false;
-					dynamic_cast<sf::Text*>(objects_[1])->setFillColor(sf::Color::Red);
-					return;
-				}
-
-				StartPlaceElement();
-
-				DestroyFullLines(); //placed
+				gameEnded_ = true;
+				dynamic_cast<sf::Text*>(objects_[1])->setFillColor(sf::Color::Red);
+				return;
 			}
-			clock.restart();
+
+			StartPlaceElement();
+
+			DestroyFullLines(); //placed
 		}
+
+		if (figure_->Moved())
+			clock.restart();
 	}
 }
 

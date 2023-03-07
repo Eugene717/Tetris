@@ -11,7 +11,7 @@ class Game
 	Figure* figure_;
 	Figure* nextFigure_;
 
-	bool gameStarted;
+	bool gameStarted_, gameEnded_;
 	int score_;
 	sf::Font font_;
 	
