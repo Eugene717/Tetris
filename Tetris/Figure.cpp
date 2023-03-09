@@ -1,6 +1,8 @@
 #include "Figure.h"
 #include "Cell.h"
 
+static sf::Clock sideMoveClock, downMoveClock;
+
 Figure::Figure(figures figure)
 {
 	speedUp_ = moved_ = false;
@@ -167,12 +169,14 @@ bool Figure::CanMove(Cell* cells[10][20]) const
 	return true;
 }
 
-bool Figure::CanMoveSide(direction dir) const
+bool Figure::CanMoveSide(Cell* cells[10][20], direction dir) const
 {
 	if (dir == left)
 		for (int i = 0; i < cells_.size(); i++)
 		{
 			if (cells_[i]->pos_.x == 0)
+				return false;
+			else if (cells[cells_[i]->pos_.x - 1][cells_[i]->pos_.y] != nullptr)
 				return false;
 		}
 	else if (dir == right)
@@ -180,20 +184,11 @@ bool Figure::CanMoveSide(direction dir) const
 		{
 			if (cells_[i]->pos_.x == 9)
 				return false;
+			else if (cells[cells_[i]->pos_.x + 1][cells_[i]->pos_.y] != nullptr)
+				return false;
 		}
 
 	return true;
-}
-
-bool Figure::Moved()
-{
-	if (moved_)
-	{
-		moved_ = false;
-		return true;
-	}
-	else 
-		return moved_;
 }
 
 void Figure::Rotate()
@@ -209,8 +204,7 @@ void Figure::Rotate()
 	case L:
 
 		break;
-	case O:
-
+	case O:  //none
 		break;
 	case S:
 
@@ -226,6 +220,107 @@ void Figure::Rotate()
 	}
 }
 
+void Figure::MoveSide(Cell* cells[10][20])
+{
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+		dir_ = none;
+	else
+	{
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+		{
+			if (dir_ == right)
+				speedUp_ = false;
+			dir_ = left;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+		{
+			if (dir_ == left)
+				speedUp_ = false;
+			dir_ = right;
+		}
+	}	
+
+	sf::Int32 time;
+	if (speedUp_)
+		time = 100;
+	else
+		time = 0;
+
+	if (sideMoveClock.getElapsedTime().asMilliseconds() >= time)
+	{
+		if (dir_ == left)
+		{
+			if (CanMoveSide(cells, left))
+				for (int i = 0; i < cells_.size(); i++)
+				{
+					cells_[i]->setPos(cells_[i]->pos_.x - 1, cells_[i]->pos_.y);
+					cells_[i]->Move(-32, 0);
+				}
+		}
+		else if (dir_ == right)
+		{
+			if (CanMoveSide(cells, right))
+				for (int i = 0; i < cells_.size(); i++)
+				{
+					cells_[i]->setPos(cells_[i]->pos_.x + 1, cells_[i]->pos_.y);
+					cells_[i]->Move(32, 0);
+				}
+		}
+
+		if (!speedUp_)
+			speedUp_ = true;
+
+		sideMoveClock.restart();
+	}
+}
+
+bool Figure::MoveDown(Cell* cells[10][20])
+{
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+	{
+		dir_ = down;
+	}
+
+	sf::Int32 time;
+	if (speedUp_ && dir_ == down)
+		time = 50;
+	else
+		time = 250;
+
+	if (downMoveClock.getElapsedTime().asMilliseconds() >= time)  //down
+	{
+		if (!CanMove(cells))
+		{
+			PlaceFigure(cells);
+			return false;
+		}
+
+		for (int i = 0; i < cells_.size(); i++)
+		{
+			cells_[i]->setPos(cells_[i]->pos_.x, cells_[i]->pos_.y + 1);
+			cells_[i]->Move(0, 32);
+		}
+
+		if (!speedUp_)
+			speedUp_ = true;
+
+		downMoveClock.restart();
+	}
+
+	dir_ = none;
+	ReleaseButton();
+
+	return true;
+}
+
+void Figure::ReleaseButton()
+{
+	if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+	{
+		speedUp_ = false;
+	}
+}
+
 void Figure::Input(sf::Keyboard::Key key)
 {
 	if (key == sf::Keyboard::Down)
@@ -238,72 +333,10 @@ void Figure::Input(sf::Keyboard::Key key)
 		Rotate();
 }
 
-bool Figure::Update(Cell* cells[10][20], sf::Time elapsed)
+bool Figure::Update(Cell* cells[10][20])
 {	
-	sf::Int32 time;
-	if (speedUp_)
-		time = 50;
-	else
-		time = 250;
-
-	if (elapsed.asMilliseconds() >= time)
-	{
-		speedUp_ = false;
-
-		switch (dir_)
-		{
-		case none:
-			speedUp_ = false;
-			break;
-		case down:
-			speedUp_ = true;
-			break;
-		case left:
-			speedUp_ = true;	
-			if (CanMoveSide(left))
-				for (int i = 0; i < cells_.size(); i++)
-				{
-					cells_[i]->setPos(cells_[i]->pos_.x - 1, cells_[i]->pos_.y);
-					cells_[i]->Move(-32, 0);
-				}
-			break;
-		case right:
-			speedUp_ = true;
-			if (CanMoveSide(right))
-				for (int i = 0; i < cells_.size(); i++)
-				{
-					cells_[i]->setPos(cells_[i]->pos_.x + 1, cells_[i]->pos_.y);
-					cells_[i]->Move(32, 0);
-				}
-			break;
-		default:
-			break;
-		}
-
-		if (!CanMove(cells))
-		{
-			PlaceFigure(cells);
-			return false;
-		}
-
-		if (speedUp_ && dir_ == down)
-			time = 50;
-		else
-			time = 250;
-		if (elapsed.asMilliseconds() >= time)  //down
-		{
-			for (int i = 0; i < cells_.size(); i++)
-			{
-				cells_[i]->setPos(cells_[i]->pos_.x, cells_[i]->pos_.y + 1);
-				cells_[i]->Move(0, 32);
-			}
-			moved_ = true;
-		}
-
-		dir_ = none;
-	}
-
-	return true;
+	MoveSide(cells);
+	return MoveDown(cells);	
 }
 
 void Figure::Render(sf::RenderWindow& window)

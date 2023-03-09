@@ -15,8 +15,6 @@ class Game
 	int score_;
 	sf::Font font_;
 	
-	sf::Clock clock;
-
 	Figure* SpawnFigure();
 	bool CheckGameEnd() const;
 	void StartPlaceElement();

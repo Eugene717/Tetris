@@ -23,11 +23,6 @@ int main()
 				game.Input(event.key.code);
 				break;
 			}
-			/*if (event.type == sf::Event::KeyReleased)
-			{
-				game.Input(event.key.code);
-				break;
-			}*/
 		}
 		
 		game.Update();

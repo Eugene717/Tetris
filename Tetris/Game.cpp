@@ -99,7 +99,6 @@ void Game::Input(sf::Keyboard::Key key)
 {
 	if (!gameStarted_)
 	{
-		clock.restart();
 		gameStarted_ = true;
 	}
 	else if (gameEnded_)
@@ -115,7 +114,7 @@ void Game::Update()
 {
 	if (gameStarted_)
 	{
-		if (!figure_->Update(cells_, clock.getElapsedTime()))  //placed
+		if (!figure_->Update(cells_))  //placed
 		{
 			if (CheckGameEnd())
 			{
@@ -128,9 +127,6 @@ void Game::Update()
 
 			DestroyFullLines(); //placed
 		}
-
-		if (figure_->Moved())
-			clock.restart();
 	}
 }
 

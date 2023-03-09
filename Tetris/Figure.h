@@ -30,18 +30,20 @@ class Figure
 	direction dir_;
 	std::vector<Cell*> cells_;
 
+	void ReleaseButton();
 	void PlaceFigure(Cell* cells[10][20]);
 	bool CanMove(Cell* cells[10][20]) const;
-	bool CanMoveSide(direction dir) const;
+	bool CanMoveSide(Cell* cells[10][20], direction dir) const;
+	void MoveSide(Cell* cells[10][20]);
+	bool MoveDown(Cell* cells[10][20]);
 	void Rotate();
 public:
 	Figure(figures figure);
 	~Figure();
 	void Move(const float x, const float y);
-	bool Moved();
 
 	void Input(sf::Keyboard::Key key);
-	bool Update(Cell* cells[10][20], sf::Time elapsed);
+	bool Update(Cell* cells[10][20]);
 	void Render(sf::RenderWindow& window);
 };
 
