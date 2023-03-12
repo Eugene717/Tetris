@@ -3,8 +3,9 @@
 
 static sf::Clock sideMoveClock, downMoveClock;
 
-Figure::Figure(figures figure) :figure_(figure), dir_(none), rotation_(0), speedUp_(false), moved_(false)
+Figure::Figure(figures figure) :figure_(figure), dir_(none), rotation_(0)
 {
+	speedUp_ = moved_ = rotate_ = false;
 	sf::Color color;
 
 	switch (figure)
@@ -221,14 +222,24 @@ void Figure::MoveToFrame()
 	}
 }
 
-void Figure::Rotate()
+void Figure::Rotate(Cell* cells[10][20])
 {
 	int i;
 	switch (figure_)
 	{
-	case I:   //вращение фигуры если после вращения она не займет место какой либо другой фигуры или не выйдет за края
+	case I:
 		if (rotation_ == 0)
 		{
+			if (cells_[0]->pos_.x < 9 && cells_[0]->pos_.y < 19)
+				if (cells[cells_[0]->pos_.x + 1][cells_[0]->pos_.y + 1] != nullptr)
+					break;
+			if (cells_[2]->pos_.x > 0 && cells_[2]->pos_.y > 0)
+				if (cells[cells_[2]->pos_.x - 1][cells_[2]->pos_.y - 1] != nullptr)
+					break;
+			if (cells_[3]->pos_.x > 1 && cells_[3]->pos_.y > 1)
+				if (cells[cells_[3]->pos_.x - 2][cells_[3]->pos_.y - 2] != nullptr)
+					break;
+
 			cells_[0]->MoveCell(1, 1);
 			cells_[2]->MoveCell(-1, -1);
 			cells_[3]->MoveCell(-2, -2);
@@ -236,6 +247,16 @@ void Figure::Rotate()
 		}
 		else
 		{
+			if (cells_[0]->pos_.x > 0 && cells_[0]->pos_.y > 0)
+				if (cells[cells_[0]->pos_.x - 1][cells_[0]->pos_.y - 1] != nullptr)
+					break;
+			if (cells_[2]->pos_.x > 0 && cells_[2]->pos_.y < 19)
+				if (cells[cells_[2]->pos_.x + 1][cells_[2]->pos_.y + 1] != nullptr)
+					break;
+			if (cells_[3]->pos_.x < 8 && cells_[3]->pos_.y < 18)
+				if (cells[cells_[3]->pos_.x + 2][cells_[3]->pos_.y + 2] != nullptr)
+					break;
+
 			cells_[0]->MoveCell(-1, -1); 
 			cells_[2]->MoveCell(1, 1);
 			cells_[3]->MoveCell(2, 2);
@@ -245,6 +266,16 @@ void Figure::Rotate()
 	case J:
 		if (rotation_ == 0)
 		{
+			if (cells_[0]->pos_.x < 9 && cells_[0]->pos_.y < 19)
+				if (cells[cells_[0]->pos_.x + 1][cells_[0]->pos_.y + 1] != nullptr)
+					break;
+			if (cells_[2]->pos_.x > 0 && cells_[2]->pos_.y > 0)
+				if (cells[cells_[2]->pos_.x - 1][cells_[2]->pos_.y - 1] != nullptr)
+					break;
+			if (cells_[3]->pos_.y > 1)
+				if (cells[cells_[3]->pos_.x][cells_[3]->pos_.y - 2] != nullptr)
+					break;
+
 			cells_[0]->MoveCell(1, 1);
 			cells_[2]->MoveCell(-1, -1);
 			cells_[3]->MoveCell(0, -2);
@@ -252,6 +283,16 @@ void Figure::Rotate()
 		}
 		else if (rotation_ == 1)
 		{
+			if (cells_[0]->pos_.x > 0 && cells_[0]->pos_.y < 19)
+				if (cells[cells_[0]->pos_.x - 1][cells_[0]->pos_.y + 1] != nullptr)
+					break;
+			if (cells_[2]->pos_.x < 9 && cells_[2]->pos_.y > 0)
+				if (cells[cells_[2]->pos_.x + 1][cells_[2]->pos_.y - 1] != nullptr)
+					break;
+			if (cells_[3]->pos_.x < 8)
+				if (cells[cells_[3]->pos_.x + 2][cells_[3]->pos_.y] != nullptr)
+					break;
+
 			cells_[0]->MoveCell(-1, 1);
 			cells_[2]->MoveCell(1, -1);
 			cells_[3]->MoveCell(2, 0);
@@ -259,6 +300,16 @@ void Figure::Rotate()
 		}
 		else if (rotation_ == 2)
 		{
+			if (cells_[0]->pos_.x > 0 && cells_[0]->pos_.y > 0)
+				if (cells[cells_[0]->pos_.x - 1][cells_[0]->pos_.y - 1] != nullptr)
+					break;
+			if (cells_[2]->pos_.x < 9 && cells_[2]->pos_.y < 19)
+				if (cells[cells_[2]->pos_.x + 1][cells_[2]->pos_.y + 1] != nullptr)
+					break;
+			if (cells_[3]->pos_.y < 18)
+				if (cells[cells_[3]->pos_.x][cells_[3]->pos_.y + 2] != nullptr)
+					break;
+
 			cells_[0]->MoveCell(-1, -1);
 			cells_[2]->MoveCell(1, 1);
 			cells_[3]->MoveCell(0, 2);
@@ -266,6 +317,16 @@ void Figure::Rotate()
 		}
 		else
 		{
+			if (cells_[0]->pos_.x < 9 && cells_[0]->pos_.y > 0)
+				if (cells[cells_[0]->pos_.x + 1][cells_[0]->pos_.y - 1] != nullptr)
+					break;
+			if (cells_[2]->pos_.x > 0 && cells_[2]->pos_.y < 19)
+				if (cells[cells_[2]->pos_.x - 1][cells_[2]->pos_.y + 1] != nullptr)
+					break;
+			if (cells_[3]->pos_.x > 1)
+				if (cells[cells_[3]->pos_.x - 2][cells_[3]->pos_.y] != nullptr)
+					break;
+
 			cells_[0]->MoveCell(1, -1);
 			cells_[2]->MoveCell(-1, 1);
 			cells_[3]->MoveCell(-2, 0);
@@ -275,6 +336,16 @@ void Figure::Rotate()
 	case L:
 		if (rotation_ == 0)
 		{
+			if (cells_[0]->pos_.x < 9 && cells_[0]->pos_.y < 19)
+				if (cells[cells_[0]->pos_.x + 1][cells_[0]->pos_.y + 1] != nullptr)
+					break;
+			if (cells_[2]->pos_.x > 0 && cells_[2]->pos_.y > 0)
+				if (cells[cells_[2]->pos_.x - 1][cells_[2]->pos_.y - 1] != nullptr)
+					break;
+			if (cells_[3]->pos_.x > 1)
+				if (cells[cells_[3]->pos_.x - 2][cells_[3]->pos_.y] != nullptr)
+					break;
+
 			cells_[0]->MoveCell(1, 1);
 			cells_[2]->MoveCell(-1, -1);
 			cells_[3]->MoveCell(-2, 0);
@@ -282,6 +353,16 @@ void Figure::Rotate()
 		}
 		else if (rotation_ == 1)
 		{
+			if (cells_[0]->pos_.x > 0 && cells_[0]->pos_.y < 19)
+				if (cells[cells_[0]->pos_.x - 1][cells_[0]->pos_.y + 1] != nullptr)
+					break;
+			if (cells_[2]->pos_.x < 9 && cells_[2]->pos_.y > 0)
+				if (cells[cells_[2]->pos_.x + 1][cells_[2]->pos_.y - 1] != nullptr)
+					break;
+			if (cells_[3]->pos_.y > 1)
+				if (cells[cells_[3]->pos_.x][cells_[3]->pos_.y - 2] != nullptr)
+					break;
+
 			cells_[0]->MoveCell(-1, 1);
 			cells_[2]->MoveCell(1, -1);
 			cells_[3]->MoveCell(0, -2);
@@ -289,6 +370,16 @@ void Figure::Rotate()
 		}
 		else if (rotation_ == 2)
 		{
+			if (cells_[0]->pos_.x > 0 && cells_[0]->pos_.y > 0)
+				if (cells[cells_[0]->pos_.x - 1][cells_[0]->pos_.y - 1] != nullptr)
+					break;
+			if (cells_[2]->pos_.x < 9 && cells_[2]->pos_.y < 19)
+				if (cells[cells_[2]->pos_.x + 1][cells_[2]->pos_.y + 1] != nullptr)
+					break;
+			if (cells_[3]->pos_.x < 8)
+				if (cells[cells_[3]->pos_.x + 2][cells_[3]->pos_.y] != nullptr)
+					break;
+
 			cells_[0]->MoveCell(-1, -1);
 			cells_[2]->MoveCell(1, 1);
 			cells_[3]->MoveCell(2, 0);
@@ -296,6 +387,16 @@ void Figure::Rotate()
 		}
 		else
 		{
+			if (cells_[0]->pos_.x < 9 && cells_[0]->pos_.y > 0)
+				if (cells[cells_[0]->pos_.x + 1][cells_[0]->pos_.y - 1] != nullptr)
+					break;
+			if (cells_[2]->pos_.x > 0 && cells_[2]->pos_.y < 19)
+				if (cells[cells_[2]->pos_.x - 1][cells_[2]->pos_.y + 1] != nullptr)
+					break;
+			if (cells_[3]->pos_.y < 18)
+				if (cells[cells_[3]->pos_.x][cells_[3]->pos_.y + 2] != nullptr)
+					break;
+
 			cells_[0]->MoveCell(1, -1);
 			cells_[2]->MoveCell(-1, 1);
 			cells_[3]->MoveCell(0, 2);
@@ -307,6 +408,17 @@ void Figure::Rotate()
 	case S:
 		if (rotation_ == 0)
 		{
+
+			if (cells_[0]->pos_.x > 0 && cells_[0]->pos_.y < 19)
+				if (cells[cells_[0]->pos_.x - 1][cells_[0]->pos_.y + 1] != nullptr)
+					break;
+			if (cells_[2]->pos_.x > 0 && cells_[2]->pos_.y > 0)
+				if (cells[cells_[2]->pos_.x - 1][cells_[2]->pos_.y - 1] != nullptr)
+					break;
+			if (cells_[3]->pos_.y > 1)
+				if (cells[cells_[3]->pos_.x][cells_[3]->pos_.y - 2] != nullptr)
+					break;
+
 			cells_[0]->MoveCell(-1, 1);
 			cells_[2]->MoveCell(-1, -1);
 			cells_[3]->MoveCell(0, -2);
@@ -314,6 +426,16 @@ void Figure::Rotate()
 		}
 		else
 		{
+			if (cells_[0]->pos_.x < 9 && cells_[0]->pos_.y > 0)
+				if (cells[cells_[0]->pos_.x + 1][cells_[0]->pos_.y - 1] != nullptr)
+					break;
+			if (cells_[2]->pos_.x < 9 && cells_[2]->pos_.y < 19)
+				if (cells[cells_[2]->pos_.x + 1][cells_[2]->pos_.y + 1] != nullptr)
+					break;
+			if (cells_[3]->pos_.y < 18)
+				if (cells[cells_[3]->pos_.x][cells_[3]->pos_.y + 2] != nullptr)
+					break;
+
 			cells_[0]->MoveCell(1, -1);
 			cells_[2]->MoveCell(1, 1);
 			cells_[3]->MoveCell(0, 2);
@@ -323,6 +445,16 @@ void Figure::Rotate()
 	case T:
 		if (rotation_ == 0)
 		{
+			if (cells_[0]->pos_.x < 9 && cells_[0]->pos_.y > 0)
+				if (cells[cells_[0]->pos_.x + 1][cells_[0]->pos_.y - 1] != nullptr)
+					break;
+			if (cells_[2]->pos_.x > 0 && cells_[2]->pos_.y < 19)
+				if (cells[cells_[2]->pos_.x - 1][cells_[2]->pos_.y + 1] != nullptr)
+					break;
+			if (cells_[3]->pos_.x > 0 && cells_[3]->pos_.y > 0)
+				if (cells[cells_[3]->pos_.x - 1][cells_[3]->pos_.y - 1] != nullptr)
+					break;
+
 			cells_[0]->MoveCell(1, -1);
 			cells_[2]->MoveCell(-1, 1);
 			cells_[3]->MoveCell(-1, -1);
@@ -330,6 +462,16 @@ void Figure::Rotate()
 		}
 		else if (rotation_ == 1)
 		{
+			if (cells_[0]->pos_.x < 9 && cells_[0]->pos_.y < 19)
+				if (cells[cells_[0]->pos_.x + 1][cells_[0]->pos_.y + 1] != nullptr)
+					break;
+			if (cells_[2]->pos_.x > 0 && cells_[2]->pos_.y > 0)
+				if (cells[cells_[2]->pos_.x - 1][cells_[2]->pos_.y - 1] != nullptr)
+					break;
+			if (cells_[3]->pos_.x < 9 && cells_[3]->pos_.y > 0)
+				if (cells[cells_[3]->pos_.x + 1][cells_[3]->pos_.y - 1] != nullptr)
+					break;
+
 			cells_[0]->MoveCell(1, 1);
 			cells_[2]->MoveCell(-1, -1);
 			cells_[3]->MoveCell(1, -1);
@@ -337,6 +479,16 @@ void Figure::Rotate()
 		}
 		else if (rotation_ == 2)
 		{
+			if (cells_[0]->pos_.x > 0 && cells_[0]->pos_.y < 19)
+				if (cells[cells_[0]->pos_.x - 1][cells_[0]->pos_.y + 1] != nullptr)
+					break;
+			if (cells_[2]->pos_.x < 9 && cells_[2]->pos_.y > 0)
+				if (cells[cells_[2]->pos_.x + 1][cells_[2]->pos_.y - 1] != nullptr)
+					break;
+			if (cells_[3]->pos_.x < 9 && cells_[3]->pos_.y < 19)
+				if (cells[cells_[3]->pos_.x + 1][cells_[3]->pos_.y + 1] != nullptr)
+					break;
+
 			cells_[0]->MoveCell(-1, 1);
 			cells_[2]->MoveCell(1, -1);
 			cells_[3]->MoveCell(1, 1);
@@ -344,6 +496,16 @@ void Figure::Rotate()
 		}
 		else
 		{
+			if (cells_[0]->pos_.x > 0 && cells_[0]->pos_.y > 0)
+				if (cells[cells_[0]->pos_.x - 1][cells_[0]->pos_.y - 1] != nullptr)
+					break;
+			if (cells_[2]->pos_.x < 9 && cells_[2]->pos_.y < 19)
+				if (cells[cells_[2]->pos_.x + 1][cells_[2]->pos_.y + 1] != nullptr)
+					break;
+			if (cells_[3]->pos_.x > 0 && cells_[3]->pos_.y < 19)
+				if (cells[cells_[3]->pos_.x - 1][cells_[3]->pos_.y + 1] != nullptr)
+					break;
+
 			cells_[0]->MoveCell(-1, -1);
 			cells_[2]->MoveCell(1, 1);
 			cells_[3]->MoveCell(-1, 1);
@@ -353,6 +515,16 @@ void Figure::Rotate()
 	case Z:
 		if (rotation_ == 0)
 		{
+			if (cells_[0]->pos_.x < 9 && cells_[0]->pos_.y > 0)
+				if (cells[cells_[0]->pos_.x + 1][cells_[0]->pos_.y - 1] != nullptr)
+					break;
+			if (cells_[2]->pos_.x > 0 && cells_[2]->pos_.y > 0)
+				if (cells[cells_[2]->pos_.x - 1][cells_[2]->pos_.y - 1] != nullptr)
+					break;
+			if (cells_[3]->pos_.x > 1)
+				if (cells[cells_[3]->pos_.x - 2][cells_[3]->pos_.y] != nullptr)
+					break;
+
 			cells_[0]->MoveCell(1, -1);
 			cells_[2]->MoveCell(-1, -1);
 			cells_[3]->MoveCell(-2, 0);
@@ -360,6 +532,16 @@ void Figure::Rotate()
 		}
 		else
 		{
+			if (cells_[0]->pos_.x > 0 && cells_[0]->pos_.y < 19)
+				if (cells[cells_[0]->pos_.x - 1][cells_[0]->pos_.y + 1] != nullptr)
+					break;
+			if (cells_[2]->pos_.x < 9 && cells_[2]->pos_.y < 19)
+				if (cells[cells_[2]->pos_.x + 1][cells_[2]->pos_.y + 1] != nullptr)
+					break;
+			if (cells_[3]->pos_.x > 1)
+				if (cells[cells_[3]->pos_.x + 2][cells_[3]->pos_.y] != nullptr)
+					break;
+
 			cells_[0]->MoveCell(-1, 1);
 			cells_[2]->MoveCell(1, 1);
 			cells_[3]->MoveCell(2, 0);
@@ -371,6 +553,7 @@ void Figure::Rotate()
 	}
 
 	MoveToFrame();
+	rotate_ = false;
 }
 
 void Figure::MoveSide(Cell* cells[10][20])
@@ -482,12 +665,14 @@ void Figure::Input(sf::Keyboard::Key key)
 		dir_ = left;
 	else if (key == sf::Keyboard::Right)
 		dir_ = right;
-	else if (key == sf::Keyboard::Up)  //rotate
-		Rotate();
+	else if (key == sf::Keyboard::Up)
+		rotate_ = true;
 }
 
 bool Figure::Update(Cell* cells[10][20])
 {	
+	if (rotate_)
+		Rotate(cells);
 	MoveSide(cells);
 	return MoveDown(cells);	
 }
