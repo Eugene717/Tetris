@@ -38,3 +38,10 @@ void Cell::Move(const float x, const float y)
 {
 	body_.move(x, y);
 }
+
+void Cell::MoveCell(const int x, const int y)
+{
+	pos_.x += x;
+	pos_.y += y;
+	body_.move(x * 32, y * 32);
+}

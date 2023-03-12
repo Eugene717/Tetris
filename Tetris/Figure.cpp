@@ -3,12 +3,8 @@
 
 static sf::Clock sideMoveClock, downMoveClock;
 
-Figure::Figure(figures figure)
+Figure::Figure(figures figure) :figure_(figure), dir_(none), rotation_(0), speedUp_(false), moved_(false)
 {
-	speedUp_ = moved_ = false;
-	dir_ = none;
-	figure_ = figure;
-
 	sf::Color color;
 
 	switch (figure)
@@ -51,10 +47,10 @@ Figure::Figure(figures figure)
 		third->setPosition(207, 32 * 3 + 16);
 		four->setPosition(207, 32 * 4 + 16);
 
-		first->setPos(5, 3);
-		second->setPos(5, 2);
-		third->setPos(5, 1);
-		four->setPos(5, 0);
+		first->setPos(5, 0);
+		second->setPos(5, 1);
+		third->setPos(5, 2);
+		four->setPos(5, 3);
 		break;
 	case J:
 		first->setPosition(207, 48);
@@ -90,35 +86,35 @@ Figure::Figure(figures figure)
 		four->setPos(5, 1);
 		break;
 	case S:
-		first->setPosition(207, 48);
-		second->setPosition(207 + 32, 48);
+		first->setPosition(207 + 32, 48);
+		second->setPosition(207, 48);
 		third->setPosition(207, 32 + 48);
 		four->setPosition(207 - 32, 32 + 48);
 
-		first->setPos(5, 0);
-		second->setPos(6, 0);
+		first->setPos(6, 0);
+		second->setPos(5, 0);
 		third->setPos(5, 1);
 		four->setPos(4, 1);
 		break;
 	case T:
-		first->setPosition(207, 48);
-		second->setPosition(207 - 32, 48);
+		first->setPosition(207 - 32, 48);
+		second->setPosition(207, 48);
 		third->setPosition(207 + 32, 48);
 		four->setPosition(207, 48 + 32);
 
-		first->setPos(5, 0);
-		second->setPos(4, 0);
+		first->setPos(4, 0);
+		second->setPos(5, 0);
 		third->setPos(6, 0);
 		four->setPos(5, 1);
 		break;
 	case Z:
-		first->setPosition(207, 48);
-		second->setPosition(207 - 32, 48);
+		first->setPosition(207 - 32, 48);
+		second->setPosition(207, 48);
 		third->setPosition(207, 32 + 48);
 		four->setPosition(207 + 32, 32 + 48);
 
-		first->setPos(5, 0);
-		second->setPos(4, 0);
+		first->setPos(4, 0);
+		second->setPos(5, 0);
 		third->setPos(5, 1);
 		four->setPos(6, 1);
 		break;
@@ -150,6 +146,7 @@ void Figure::PlaceFigure(Cell* cells[10][20])
 	for (int i = 0; i < cells_.size(); i++)
 	{
 		cells[cells_[i]->pos_.x][cells_[i]->pos_.y] = cells_[i];
+		cells_[i]->placed_ = true;
 	}
 }
 
@@ -191,33 +188,189 @@ bool Figure::CanMoveSide(Cell* cells[10][20], direction dir) const
 	return true;
 }
 
+void Figure::MoveToFrame()
+{
+	bool left;
+
+	while (true)
+	{
+		for (int i = 0; i < cells_.size(); i++)
+		{
+			if (cells_[i]->pos_.x < 0)
+			{
+				left = true;
+				break;
+			}
+			if (cells_[i]->pos_.x > 9)
+			{
+				left = false;
+				break;
+			}
+
+			if (i == cells_.size() - 1)
+				return;
+		}
+
+		for (int i = 0; i < cells_.size(); i++)
+		{
+			if (left)
+				cells_[i]->MoveCell(1, 0);
+			else
+				cells_[i]->MoveCell(-1, 0);
+		}
+	}
+}
+
 void Figure::Rotate()
 {
+	int i;
 	switch (figure_)
 	{
-	case I:
-
+	case I:   //вращение фигуры если после вращения она не займет место какой либо другой фигуры или не выйдет за края
+		if (rotation_ == 0)
+		{
+			cells_[0]->MoveCell(1, 1);
+			cells_[2]->MoveCell(-1, -1);
+			cells_[3]->MoveCell(-2, -2);
+			rotation_ = 1;
+		}
+		else
+		{
+			cells_[0]->MoveCell(-1, -1); 
+			cells_[2]->MoveCell(1, 1);
+			cells_[3]->MoveCell(2, 2);
+			rotation_ = 0;
+		}
 		break;
 	case J:
-
+		if (rotation_ == 0)
+		{
+			cells_[0]->MoveCell(1, 1);
+			cells_[2]->MoveCell(-1, -1);
+			cells_[3]->MoveCell(0, -2);
+			rotation_ = 1;
+		}
+		else if (rotation_ == 1)
+		{
+			cells_[0]->MoveCell(-1, 1);
+			cells_[2]->MoveCell(1, -1);
+			cells_[3]->MoveCell(2, 0);
+			rotation_ = 2;
+		}
+		else if (rotation_ == 2)
+		{
+			cells_[0]->MoveCell(-1, -1);
+			cells_[2]->MoveCell(1, 1);
+			cells_[3]->MoveCell(0, 2);
+			rotation_ = 3;
+		}
+		else
+		{
+			cells_[0]->MoveCell(1, -1);
+			cells_[2]->MoveCell(-1, 1);
+			cells_[3]->MoveCell(-2, 0);
+			rotation_ = 0;
+		}
 		break;
 	case L:
-
+		if (rotation_ == 0)
+		{
+			cells_[0]->MoveCell(1, 1);
+			cells_[2]->MoveCell(-1, -1);
+			cells_[3]->MoveCell(-2, 0);
+			rotation_ = 1;
+		}
+		else if (rotation_ == 1)
+		{
+			cells_[0]->MoveCell(-1, 1);
+			cells_[2]->MoveCell(1, -1);
+			cells_[3]->MoveCell(0, -2);
+			rotation_ = 2;
+		}
+		else if (rotation_ == 2)
+		{
+			cells_[0]->MoveCell(-1, -1);
+			cells_[2]->MoveCell(1, 1);
+			cells_[3]->MoveCell(2, 0);
+			rotation_ = 3;
+		}
+		else
+		{
+			cells_[0]->MoveCell(1, -1);
+			cells_[2]->MoveCell(-1, 1);
+			cells_[3]->MoveCell(0, 2);
+			rotation_ = 0;
+		}
 		break;
 	case O:  //none
 		break;
 	case S:
-
+		if (rotation_ == 0)
+		{
+			cells_[0]->MoveCell(-1, 1);
+			cells_[2]->MoveCell(-1, -1);
+			cells_[3]->MoveCell(0, -2);
+			rotation_ = 1;
+		}
+		else
+		{
+			cells_[0]->MoveCell(1, -1);
+			cells_[2]->MoveCell(1, 1);
+			cells_[3]->MoveCell(0, 2);
+			rotation_ = 0;
+		}
 		break;
 	case T:
-
+		if (rotation_ == 0)
+		{
+			cells_[0]->MoveCell(1, -1);
+			cells_[2]->MoveCell(-1, 1);
+			cells_[3]->MoveCell(-1, -1);
+			rotation_ = 1;
+		}
+		else if (rotation_ == 1)
+		{
+			cells_[0]->MoveCell(1, 1);
+			cells_[2]->MoveCell(-1, -1);
+			cells_[3]->MoveCell(1, -1);
+			rotation_ = 2;
+		}
+		else if (rotation_ == 2)
+		{
+			cells_[0]->MoveCell(-1, 1);
+			cells_[2]->MoveCell(1, -1);
+			cells_[3]->MoveCell(1, 1);
+			rotation_ = 3;
+		}
+		else
+		{
+			cells_[0]->MoveCell(-1, -1);
+			cells_[2]->MoveCell(1, 1);
+			cells_[3]->MoveCell(-1, 1);
+			rotation_ = 0;
+		}
 		break;
 	case Z:
-
+		if (rotation_ == 0)
+		{
+			cells_[0]->MoveCell(1, -1);
+			cells_[2]->MoveCell(-1, -1);
+			cells_[3]->MoveCell(-2, 0);
+			rotation_ = 1;
+		}
+		else
+		{
+			cells_[0]->MoveCell(-1, 1);
+			cells_[2]->MoveCell(1, 1);
+			cells_[3]->MoveCell(2, 0);
+			rotation_ = 0;
+		}
 		break;
 	default:
 		break;
 	}
+
+	MoveToFrame();
 }
 
 void Figure::MoveSide(Cell* cells[10][20])

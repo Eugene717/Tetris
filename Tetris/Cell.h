@@ -19,6 +19,7 @@ public:
 	void setPosition(const float x, const float y);  //graphical position
 	void setPos(const int x, const int y);  //data pos
 	void Move(const float x, const float y);
+	void MoveCell(const int x, const int y);
 	friend class Figure;
 };
 
