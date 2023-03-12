@@ -72,12 +72,9 @@ Figure* Game::SpawnFigure()
 	}
 }
 
-bool Game::CheckGameEnd() const
+bool Game::CheckGameEnd()
 {
-	if (cells_[5][0] != nullptr && cells_[5][1] != nullptr)
-		return true;
-
-	return false;
+	return !nextFigure_->CanBePlaced(cells_);
 }
 
 void Game::StartPlaceElement()

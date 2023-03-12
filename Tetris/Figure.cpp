@@ -142,6 +142,16 @@ void Figure::Move(const float x, const float y)
 	}
 }
 
+bool Figure::CanBePlaced(Cell* cells[10][20])
+{
+	for (int i = 0; i < cells_.size(); i++)
+	{
+		if (cells[cells_[i]->pos_.x][cells_[i]->pos_.y] != nullptr)
+			return false;
+	}
+	return true;
+}
+
 void Figure::PlaceFigure(Cell* cells[10][20])
 {
 	for (int i = 0; i < cells_.size(); i++)

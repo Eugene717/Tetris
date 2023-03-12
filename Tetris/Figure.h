@@ -43,6 +43,7 @@ public:
 	Figure(figures figure);
 	~Figure();
 	void Move(const float x, const float y);
+	bool CanBePlaced(Cell* cells[10][20]);
 
 	void Input(sf::Keyboard::Key key);
 	bool Update(Cell* cells[10][20]);

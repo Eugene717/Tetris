@@ -16,7 +16,7 @@ class Game
 	sf::Font font_;
 	
 	Figure* SpawnFigure();
-	bool CheckGameEnd() const;
+	bool CheckGameEnd();
 	void StartPlaceElement();
 	void DestroyFullLines();
 public:
