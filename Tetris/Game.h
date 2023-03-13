@@ -17,6 +17,7 @@ class Game
 	
 	Figure* SpawnFigure();
 	bool CheckGameEnd();
+	void InitGame();
 	void StartPlaceElement();
 	void DestroyFullLines();
 public:

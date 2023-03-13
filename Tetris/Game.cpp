@@ -77,6 +77,26 @@ bool Game::CheckGameEnd()
 	return !nextFigure_->CanBePlaced(cells_);
 }
 
+void Game::InitGame()
+{
+	for (int i = 0; i < 10; i++)
+	{
+		for (int j = 0; j < 20; j++)
+		{
+			delete cells_[i][j];
+			cells_[i][j] = nullptr;
+		}
+	}
+
+	delete figure_;
+	delete nextFigure_;
+
+	gameStarted_ = gameEnded_ = false;
+	figure_ = SpawnFigure();
+	nextFigure_ = SpawnFigure();
+	nextFigure_->Move(335, 0);
+}
+
 void Game::StartPlaceElement()
 {
 	delete figure_;
@@ -100,8 +120,7 @@ void Game::Input(sf::Keyboard::Key key)
 	}
 	else if (gameEnded_)
 	{
-		gameStarted_ = false;
-		gameEnded_ = false;
+		InitGame();
 	}
 	else
 		figure_->Input(key);
