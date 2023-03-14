@@ -109,7 +109,65 @@ void Game::StartPlaceElement()
 
 void Game::DestroyFullLines()
 {
+	bool filled = true;
+	int scored = 0;
 
+	for (int j = 19; j >= 0; j--)
+	{
+		for (int i = 0; i < 10; i++)
+		{
+			if (cells_[i][j] == nullptr)
+			{
+				filled = false;
+				break;
+			}
+		}
+
+		if (filled)
+		{
+			if (scored == 0)
+				scored = 100;  //1 row
+			else if (scored == 100)
+				scored = 300;  //2 rows
+			else if (scored == 300) 
+				scored = 700;  //3 rows
+			else
+				scored = 1500; //tetris
+			
+			for (int k = j; k >= 0; k--)
+			{
+				for (int i = 0; i < 10; i++)
+				{
+					if (k != 0)
+					{
+						if (cells_[i][k] != nullptr)
+							delete cells_[i][k];
+						cells_[i][k] = cells_[i][k - 1];
+
+						if (cells_[i][k - 1] != nullptr)
+							cells_[i][k - 1]->MoveCell(0, 1);
+
+						cells_[i][k - 1] = nullptr;
+					}
+					else
+					{
+						if (cells_[i][k] != nullptr)
+						{
+							delete cells_[i][k];
+							cells_[i][k] = nullptr;
+						}
+					}
+				}
+			}
+
+			j++;
+		}
+
+		filled = true;
+	}
+
+	score_ += scored;
+	dynamic_cast<sf::Text*>(objects_[1])->setString("Score: " + std::to_string(score_));
 }
 
 void Game::Input(sf::Keyboard::Key key)
@@ -132,6 +190,8 @@ void Game::Update()
 	{
 		if (!figure_->Update(cells_))  //placed
 		{
+			DestroyFullLines(); //placed
+
 			if (CheckGameEnd())
 			{
 				gameEnded_ = true;
@@ -140,8 +200,6 @@ void Game::Update()
 			}
 
 			StartPlaceElement();
-
-			DestroyFullLines(); //placed
 		}
 	}
 }

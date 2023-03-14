@@ -588,7 +588,7 @@ void Figure::MoveSide(Cell* cells[10][20])
 
 	sf::Int32 time;
 	if (speedUp_)
-		time = 100;
+		time = 150;
 	else
 		time = 0;
 
@@ -629,9 +629,9 @@ bool Figure::MoveDown(Cell* cells[10][20])
 
 	sf::Int32 time;
 	if (speedUp_ && dir_ == down)
-		time = 50;
+		time = 100;
 	else
-		time = 250;
+		time = 400;
 
 	if (downMoveClock.getElapsedTime().asMilliseconds() >= time)  //down
 	{
