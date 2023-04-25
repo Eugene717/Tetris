@@ -9,12 +9,12 @@ Cell::Cell(sf::Color color)
 	body_.setOrigin(origin, origin);
 	body_.setFillColor(color);
 
-	if (color.r > 20)
-		color.r -= 20;
-	if (color.g > 20)
-		color.g -= 20;
-	if (color.b > 20)
-		color.b -= 20;
+	if (color.r > 50)
+		color.r -= 50;
+	if (color.g > 50)
+		color.g -= 50;
+	if (color.b > 50)
+		color.b -= 50;
 	body_.setOutlineColor(color);
 }
 
