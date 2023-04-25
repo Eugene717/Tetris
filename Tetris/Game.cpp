@@ -90,7 +90,7 @@ void Game::InitGame()
 
 	delete figure_;
 	delete nextFigure_;
-
+	
 	gameStarted_ = gameEnded_ = false;
 	figure_ = SpawnFigure();
 	nextFigure_ = SpawnFigure();
@@ -174,6 +174,7 @@ void Game::Input(sf::Keyboard::Key key)
 {
 	if (!gameStarted_)
 	{
+		Figure::Init();
 		gameStarted_ = true;
 	}
 	else if (gameEnded_)

@@ -31,6 +31,9 @@ class Figure
 	direction dir_;
 	std::vector<Cell*> cells_;
 
+	static sf::Clock sideMoveClock, downMoveClock;
+	static sf::Time lastDownMoveTime;
+
 	void ReleaseButton();
 	void PlaceFigure(Cell* cells[10][20]);
 	bool CanMove(Cell* cells[10][20]) const;
@@ -42,6 +45,7 @@ class Figure
 public:
 	Figure(figures figure);
 	~Figure();
+	static void Init();
 	void Move(const float x, const float y);
 	bool CanBePlaced(Cell* cells[10][20]);
 

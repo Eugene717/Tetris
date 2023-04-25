@@ -1,7 +1,8 @@
 #include "Figure.h"
 #include "Cell.h"
 
-static sf::Clock sideMoveClock, downMoveClock;
+sf::Clock Figure::downMoveClock, Figure::sideMoveClock;
+sf::Time Figure::lastDownMoveTime;
 
 Figure::Figure(figures figure) :figure_(figure), dir_(none), rotation_(0)
 {
@@ -132,6 +133,13 @@ Figure::Figure(figures figure) :figure_(figure), dir_(none), rotation_(0)
 Figure::~Figure()
 {
 	cells_.clear();
+}
+
+void Figure::Init()
+{
+	downMoveClock.restart();
+	sideMoveClock.restart();
+	lastDownMoveTime = sf::Time::Zero;
 }
 
 void Figure::Move(const float x, const float y)
@@ -627,13 +635,28 @@ bool Figure::MoveDown(Cell* cells[10][20])
 		dir_ = down;
 	}
 
-	sf::Int32 time;
+	double time;
 	if (speedUp_ && dir_ == down)
-		time = 100;
+		time = 50;
 	else
+	{
 		time = 400;
 
-	if (downMoveClock.getElapsedTime().asMilliseconds() >= time)  //down
+		float elapsed = downMoveClock.getElapsedTime().asSeconds();
+		int boost = 20;
+
+		if (boost > 10)
+			boost -= elapsed / 50;
+
+		if (time > 150)
+		{
+			time -= downMoveClock.getElapsedTime().asSeconds() / boost;
+			if (time < 150)
+				time = 150;
+		}
+	}
+
+	if ((downMoveClock.getElapsedTime() - lastDownMoveTime).asMilliseconds() >= time)  //down
 	{
 		if (!CanMove(cells))
 		{
@@ -650,7 +673,7 @@ bool Figure::MoveDown(Cell* cells[10][20])
 		if (!speedUp_)
 			speedUp_ = true;
 
-		downMoveClock.restart();
+		lastDownMoveTime = downMoveClock.getElapsedTime();
 	}
 
 	dir_ = none;
